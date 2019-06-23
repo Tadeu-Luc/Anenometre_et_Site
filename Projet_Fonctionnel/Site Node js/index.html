@@ -1,0 +1,121 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Station Météo Eixa6 Informatique</title>
+</head>
+<body>
+
+
+      <h1>Station Météo Eixa6 Informatique</h1>
+            <img src="ImageEixa.png"
+           width="75"
+           height="75"
+           align="right">
+      <br>
+      <h2> 
+        <span style="text-decoration: underline;">
+          Données recensées                                     
+        </span>
+      </h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
+<div id="chart-container">
+    <canvas id="graphCanvas"></canvas>
+</div>
+<button id="id_csv">Générer CSV</button>
+<script>
+    var vitesse = [];
+    var heure = [];
+    var angle = [];
+    var direction = [];
+    var typedetemps = [];
+var test = document.getElementById("id_csv");
+test.addEventListener("click", ()=>{
+
+
+    const rows = [];
+    var cpt=0;
+
+    for (var i in vitesse){
+        rows.push([vitesse[cpt],angle[cpt],direction[cpt],typedetemps[cpt],heure[cpt]]);
+        cpt++;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,"
+        + rows.map(e => e.join(",")).join("\n");
+
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
+}, false);
+
+    $(document).ready(function () {
+
+        $.get('getData.php', function(response) {
+            if (!response.length) {
+                console.log('une erreur est survenue');
+                return false;
+            }
+            showGraph(response);
+        }, 'json');
+    });
+
+
+
+    function showGraph(data)
+    {
+
+
+
+
+
+            for (var i in data) {
+                vitesse.push(data[i]["Vitesse"]);
+                heure.push(data[i]["Heure"]);
+                angle.push(data[i]["Angle"]);
+                direction.push(data[i]["Direction"]);
+                typedetemps.push(data[i]["Typedetemps"]);
+
+            }
+            console.log(vitesse);
+            console.log(heure);
+            var options= {
+            animation: {
+                duration: 0 // general animation time
+            },
+            hover: {
+                animationDuration: 0 // duration of animations when hovering an item
+            },
+            responsiveAnimationDuration: 0 // animation duration after a resize
+        };
+
+            var min=[];
+        for(let i=1;i<=10;i++){
+            min.push(i);
+        }
+        labels =  ["1", "2", "3", "4", "5", "6", "saturday"];
+            var graphTarget = $("#graphCanvas");
+
+        var myLineChart = new Chart(graphTarget, {
+            type: 'line',
+            data: {
+                labels: min,
+                datasets: [{
+                    label: 'Météo Eixa6 Informatique, Marennes',
+                    data: vitesse,
+                }]
+            },
+        });
+
+
+    }
+</script>
+
+
+
+</body>
+</html>
